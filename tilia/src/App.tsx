@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { useApp } from './store';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
-import LoginOverlay from './components/LoginOverlay';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Planning from './pages/Planning';
 import Budget from './pages/Budget';
@@ -11,7 +11,27 @@ import Vendors from './pages/Vendors';
 import Inspiration from './pages/Inspiration';
 
 export default function App() {
-  const { loggedIn, toastMsg } = useApp();
+  const { identity, toastMsg } = useApp();
+
+  // Still resolving the session.
+  if (identity === undefined) {
+    return (
+      <div className="login-overlay">
+        <div className="brand" style={{ fontSize: 34 }}>Tilia<em>.</em></div>
+      </div>
+    );
+  }
+
+  // Logged out → login screen (with demo entry point).
+  if (identity === null) {
+    return (
+      <>
+        <Login />
+        {toastMsg && <div className="toast">{toastMsg}</div>}
+      </>
+    );
+  }
+
   return (
     <>
       <Sidebar />
@@ -31,7 +51,6 @@ export default function App() {
           </div>
         </main>
       </div>
-      {!loggedIn && <LoginOverlay />}
       {toastMsg && <div className="toast">{toastMsg}</div>}
     </>
   );

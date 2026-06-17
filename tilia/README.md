@@ -9,9 +9,38 @@ Vite + TypeScript, with all data persisted to `localStorage`.
 Dashboard · Planning & timeline (calendar / checklist / day-of) · Budget ·
 Guests (list + drag-and-drop seating plan) · Vendors · Inspiration.
 
-The PL/EN switch in the top bar re-renders the entire UI instantly. All data
-lives in `localStorage` under the key `tilia:v1`; clearing it restores the
-sample data (couple "Ania & Tomek", wedding 2026-09-12 15:00, "Dwór Lipowy").
+The PL/EN switch (top bar and login page) re-renders the entire UI instantly.
+
+## Accounts & demo
+
+The app opens on a login screen with two ways in:
+
+- **Email + password** (Supabase Auth) — real accounts. Each account's data is
+  saved on the device under `tilia:v1:user:<uid>`. (Cloud sync across devices is
+  the next step; today the data is local per account.)
+- **Explore the demo** — no account; clicks through with the sample wedding
+  ("Ania & Tomek", 2026-09-12 15:00, "Dwór Lipowy"), saved under `tilia:v1:demo`.
+  A "Demo" badge shows in the top bar. Logging out clears the session but keeps
+  the demo data for next time.
+
+Language is stored globally (`tilia:lang`). Until Supabase credentials are
+added (see below) the email/password form shows a "backend isn't connected"
+message and the demo still works.
+
+## Supabase setup
+
+1. Create a free project at [supabase.com](https://supabase.com).
+2. In **Project Settings → API**, copy the **Project URL** and the **anon
+   public** key.
+3. Copy `.env.example` to `.env` and paste them in:
+   ```
+   VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-anon-public-key
+   ```
+4. Restart `npm run dev`. Email/password sign-up and sign-in now work.
+
+`.env` is gitignored. The anon key is safe in a frontend bundle — row-level
+security, added in a later step, is what protects data.
 
 ## Requirements
 
@@ -62,8 +91,10 @@ npx vercel --prod       # deploy; accept the detected Vite settings
 Vercel auto-detects Vite (build `npm run build`, output `dist`). No env vars are
 needed in Phase 1.
 
-## Next phases (not in this build)
+## Next phases
 
-- **Phase 2**: Supabase auth + Postgres, migrate localStorage on first login, RLS.
+- **Phase 2 (in progress)**: ✅ email/password auth + demo mode. Next: move
+  wedding data into Postgres with row-level security so it syncs across devices,
+  migrate existing localStorage data on first login, add Google OAuth.
 - **Phase 3**: real file uploads, public share links, derived notifications,
   profile/settings.

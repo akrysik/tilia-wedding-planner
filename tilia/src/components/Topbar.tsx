@@ -2,8 +2,15 @@ import { useEffect, useState } from 'react';
 import { useApp } from '../store';
 
 export default function Topbar() {
-  const { lang, setLang, tr, data, update, setLoggedIn, toast } = useApp();
+  const { lang, setLang, tr, data, update, identity, signOut, toast } = useApp();
   const [open, setOpen] = useState<'notif' | 'acct' | null>(null);
+
+  const isDemo = identity?.kind === 'demo';
+  const email = identity?.kind === 'user' ? identity.email : 'demo@tilia.app';
+  const initials = isDemo
+    ? 'D'
+    : (email.split('@')[0].slice(0, 2) || 'AK').toUpperCase();
+  const displayName = isDemo ? tr.auth.demoBadge : email.split('@')[0];
 
   useEffect(() => {
     if (!open) return;
@@ -19,6 +26,7 @@ export default function Topbar() {
 
   return (
     <header className="topbar">
+      {isDemo && <span className="demo-badge">{tr.auth.demoBadge}</span>}
       <div className="lang-switch">
         <button className={lang === 'pl' ? 'active' : ''} onClick={() => setLang('pl')}>PL</button>
         <button className={lang === 'en' ? 'active' : ''} onClick={() => setLang('en')}>EN</button>
@@ -59,18 +67,18 @@ export default function Topbar() {
           className="acct"
           onClick={(e) => { e.stopPropagation(); setOpen(open === 'acct' ? null : 'acct'); }}
         >
-          <span className="avatar">AK</span>
-          <span>Ania K.</span>
+          <span className="avatar">{initials}</span>
+          <span>{displayName}</span>
           <span className="chev">▼</span>
         </div>
         {open === 'acct' && (
           <div className="dropdown" style={{ minWidth: 220 }} onClick={(e) => e.stopPropagation()}>
-            <div className="dd-head">ania.k@example.com</div>
+            <div className="dd-head">{isDemo ? tr.auth.demoSub : email}</div>
             <button className="dd-item" onClick={() => toast(tr.top.soon)}>👤 {tr.top.profile}</button>
             <button className="dd-item" onClick={() => toast(tr.top.soon)}>⚙️ {tr.top.settings}</button>
             <button className="dd-item" onClick={() => toast(tr.top.soon)}>💳 {tr.top.billing}</button>
             <hr className="dd-sep" />
-            <button className="dd-item danger" onClick={() => { setOpen(null); setLoggedIn(false); }}>↩ {tr.top.logout}</button>
+            <button className="dd-item danger" onClick={() => { setOpen(null); void signOut(); }}>↩ {tr.top.logout}</button>
           </div>
         )}
       </div>
