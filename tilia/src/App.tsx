@@ -9,6 +9,7 @@ import Budget from './pages/Budget';
 import Guests from './pages/Guests';
 import Vendors from './pages/Vendors';
 import Inspiration from './pages/Inspiration';
+import Profile from './pages/Profile';
 
 export default function App() {
   const { identity, toastMsg } = useApp();
@@ -46,6 +47,7 @@ export default function App() {
               <Route path="/guests" element={<Guests />} />
               <Route path="/vendors" element={<Vendors />} />
               <Route path="/inspiration" element={<Inspiration />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>

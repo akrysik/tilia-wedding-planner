@@ -59,6 +59,7 @@ export interface Guest {
 
 export interface SeatingTable {
   id: number;
+  number: number; // user-facing table number
   shape: TableShape;
   name: BiText;
   x: number;
@@ -90,7 +91,18 @@ export interface Notification {
   read: boolean;
 }
 
+export interface Wedding {
+  brideName: string;
+  groomName: string;
+  date: string; // YYYY-MM-DD
+  time: string; // HH:MM
+  venue: string;
+  contactEmail: string;
+  contactPhone: string;
+}
+
 export interface AppData {
+  wedding: Wedding;
   tasks: Task[];
   dayOf: DayOfItem[];
   budget: {

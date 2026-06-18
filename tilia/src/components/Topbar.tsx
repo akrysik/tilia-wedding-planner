@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../store';
 
 export default function Topbar() {
   const { lang, setLang, tr, data, update, identity, signOut, toast } = useApp();
   const [open, setOpen] = useState<'notif' | 'acct' | null>(null);
+  const navigate = useNavigate();
 
   const isDemo = identity?.kind === 'demo';
   const email = identity?.kind === 'user' ? identity.email : 'demo@tilia.app';
@@ -74,7 +76,7 @@ export default function Topbar() {
         {open === 'acct' && (
           <div className="dropdown" style={{ minWidth: 220 }} onClick={(e) => e.stopPropagation()}>
             <div className="dd-head">{isDemo ? tr.auth.demoSub : email}</div>
-            <button className="dd-item" onClick={() => toast(tr.top.soon)}>👤 {tr.top.profile}</button>
+            <button className="dd-item" onClick={() => { setOpen(null); navigate('/profile'); }}>👤 {tr.top.profile}</button>
             <button className="dd-item" onClick={() => toast(tr.top.soon)}>⚙️ {tr.top.settings}</button>
             <button className="dd-item" onClick={() => toast(tr.top.soon)}>💳 {tr.top.billing}</button>
             <hr className="dd-sep" />

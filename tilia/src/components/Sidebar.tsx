@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useApp } from '../store';
+import { formatWeddingDate } from '../format';
 
 const NAV: [string, string, string][] = [
   ['/', '◆', 'dashboard'],
@@ -11,11 +12,13 @@ const NAV: [string, string, string][] = [
 ];
 
 export default function Sidebar() {
-  const { tr } = useApp();
+  const { tr, lang, data } = useApp();
+  const w = data.wedding;
+  const tagline = `${w.brideName} & ${w.groomName} · ${formatWeddingDate(w.date, lang)}`;
   return (
     <aside>
       <div className="brand">Tilia<em>.</em></div>
-      <div className="tagline">{tr.tagline}</div>
+      <div className="tagline">{tagline}</div>
       <nav>
         {NAV.map(([path, ico, key]) => (
           <NavLink key={key} to={path} end={path === '/'} className={({ isActive }) => (isActive ? 'active' : '')}>

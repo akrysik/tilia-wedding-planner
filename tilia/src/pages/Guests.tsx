@@ -54,6 +54,7 @@ export default function Guests() {
   const { lang, tr, data, update, toast } = useApp();
   const [filter, setFilter] = useState<'all' | GuestGroup>('all');
   const [editing, setEditing] = useState<number | null>(null);
+  const [editingTable, setEditingTable] = useState<number | null>(null);
   const [picked, setPicked] = useState<number | null>(null);
   const [newFirst, setNewFirst] = useState('');
   const [newLast, setNewLast] = useState('');
@@ -85,12 +86,23 @@ export default function Guests() {
   };
 
   const addTable = () => {
-    const name = tName.trim() || ('#' + (data.tables.length + 1));
+    const name = tName.trim();
+    update((d) => {
+      const number = Math.max(0, ...d.tables.map((t) => t.number || 0)) + 1;
+      return {
+        ...d,
+        tables: [...d.tables, { id: Date.now(), number, shape: tShape, name: { en: name, pl: name }, x: 20 + Math.random() * 80, y: 20 + Math.random() * 60 }],
+      };
+    });
+    setTName('');
+  };
+
+  const saveTable = (id: number, number: number, name: string) => {
     update((d) => ({
       ...d,
-      tables: [...d.tables, { id: Date.now(), shape: tShape, name: { en: name, pl: name }, x: 20 + Math.random() * 80, y: 20 + Math.random() * 60 }],
+      tables: d.tables.map((t) => (t.id === id ? { ...t, number, name: { en: name, pl: name } } : t)),
     }));
-    setTName('');
+    setEditingTable(null);
   };
 
   const removeTable = (id: number) => {
@@ -188,7 +200,7 @@ export default function Guests() {
       </div>
 
       <div className="card mt">
-        <h3>{tr.guests.seating}</h3>
+        <h3 className="seating-head">{tr.guests.seating}</h3>
         <p className="muted" style={{ margin: '6px 0 12px' }}>{tr.guests.seatHint}</p>
         <div className="row mb">
           <input type="text" value={tName} onChange={(e) => setTName(e.target.value)} placeholder={tr.guests.tableName} style={{ minWidth: 140 }} />
@@ -207,10 +219,12 @@ export default function Guests() {
               lang={lang}
               picked={picked}
               notFilledLabel={tr.guests.notFilled}
+              tableWord={tr.guests.tableLabel}
               onCommit={(x, y) => update((d) => ({ ...d, tables: d.tables.map((t) => (t.id === tb.id ? { ...t, x, y } : t)) }))}
               onClickSeat={() => picked != null && trySeat(picked, tb.id)}
               onDropGuest={(s) => { if (s.startsWith('chair:')) trySeat(+s.slice(6), tb.id); else if (+s) trySeat(+s, tb.id); }}
               onRemove={() => removeTable(tb.id)}
+              onEdit={() => setEditingTable(tb.id)}
               onUnseat={unseat}
               onDropOnChair={dropOnChair}
             />
@@ -231,7 +245,42 @@ export default function Guests() {
           )) : <span className="muted">—</span>}
         </div>
       </div>
+
+      {editingTable !== null && (() => {
+        const tb = data.tables.find((t) => t.id === editingTable);
+        return tb ? (
+          <TableEditModal tb={tb} onClose={() => setEditingTable(null)} onSave={(num, nm) => saveTable(tb.id, num, nm)} />
+        ) : null;
+      })()}
     </>
+  );
+}
+
+/* ===== Table edit modal (number + name) ===== */
+function TableEditModal({ tb, onClose, onSave }: { tb: SeatingTable; onClose: () => void; onSave: (number: number, name: string) => void }) {
+  const { lang, tr } = useApp();
+  const [num, setNum] = useState(String(tb.number));
+  const [name, setName] = useState(tb.name[lang] || tb.name.en);
+
+  const save = () => {
+    const n = Math.max(1, Math.round(+num) || tb.number);
+    onSave(n, name.trim());
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+        <h3>{tr.guests.editTable}</h3>
+        <label>{tr.guests.fTableNum}</label>
+        <input type="number" min={1} value={num} onChange={(e) => setNum(e.target.value)} autoFocus />
+        <label>{tr.guests.fTableName}</label>
+        <input type="text" value={name} placeholder={tr.guests.tableName} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && save()} />
+        <div className="row">
+          <button className="btn" onClick={save}>{tr.guests.save}</button>
+          <button className="btn sm gold" onClick={onClose}>{tr.guests.cancel}</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -242,16 +291,18 @@ interface TableObjProps {
   lang: 'en' | 'pl';
   picked: number | null;
   notFilledLabel: string;
+  tableWord: string;
   onCommit: (x: number, y: number) => void;
   onClickSeat: () => void;
   onDropGuest: (data: string) => void;
   onRemove: () => void;
+  onEdit: () => void;
   onUnseat: (id: number) => void;
   onDropOnChair: (data: string, targetId: number) => void;
 }
 
 function TableObj(props: TableObjProps) {
-  const { tb, guests, lang, picked, notFilledLabel, onCommit, onClickSeat, onDropGuest, onRemove, onUnseat, onDropOnChair } = props;
+  const { tb, guests, lang, picked, notFilledLabel, tableWord, onCommit, onClickSeat, onDropGuest, onRemove, onEdit, onUnseat, onDropOnChair } = props;
   const ref = useRef<HTMLDivElement>(null);
   const drag = useRef({ active: false, moved: false, startX: 0, startY: 0, origX: 0, origY: 0 });
 
@@ -260,6 +311,7 @@ function TableObj(props: TableObjProps) {
   const under = tb.shape === 'round' && n < ROUND_MIN;
   const capTxt = tb.shape === 'round' ? `${n}/${ROUND_MAX}` : `${n} · ∞`;
   const chairs = chairPositions(tb, geo);
+  const name = tb.name[lang] || tb.name.en;
 
   const onPointerDown = (e: React.PointerEvent) => {
     drag.current = { active: true, moved: false, startX: e.clientX, startY: e.clientY, origX: tb.x, origY: tb.y };
@@ -268,8 +320,11 @@ function TableObj(props: TableObjProps) {
   const onPointerMove = (e: React.PointerEvent) => {
     if (!drag.current.active) return;
     const dx = e.clientX - drag.current.startX, dy = e.clientY - drag.current.startY;
-    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) drag.current.moved = true;
     const el = ref.current!;
+    if (!drag.current.moved && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
+      drag.current.moved = true;
+      el.classList.add('dragging'); // subtle lift while moving (no re-render)
+    }
     const floor = el.parentElement!;
     const fw = floor.clientWidth, fh = floor.clientHeight;
     const nx = Math.max(-30, Math.min(fw - el.offsetWidth + 30, drag.current.origX + dx));
@@ -281,6 +336,7 @@ function TableObj(props: TableObjProps) {
     if (!drag.current.active) return;
     drag.current.active = false;
     const el = ref.current!;
+    el.classList.remove('dragging');
     const x = parseFloat(el.style.left), y = parseFloat(el.style.top);
     if (!drag.current.moved && picked != null) {
       el.style.left = tb.x + 'px';
@@ -309,11 +365,17 @@ function TableObj(props: TableObjProps) {
     >
       <div className="table-shape" style={geo.shapeStyle}>
         <button
+          className="table-edit"
+          title={tableWord}
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); onEdit(); }}
+        >✎</button>
+        <button
           className="table-del"
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => { e.stopPropagation(); onRemove(); }}
         >×</button>
-        {tb.name[lang] || tb.name.en}
+        {name ? `${tb.number}. ${name}` : `${tableWord} ${tb.number}`}
         <span className="cnt">{capTxt}</span>
         {under && <span className="notfull">⚠ {notFilledLabel}</span>}
       </div>

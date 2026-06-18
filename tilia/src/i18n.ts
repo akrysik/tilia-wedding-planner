@@ -57,6 +57,7 @@ export const T = {
       unseated: 'Unseated guests (confirmed only)', notFilled: 'not filled', noLimit: 'no limit',
       addTable: 'Add table', tableName: 'Table name…', round: 'Round', rect: 'Rectangle',
       tableFull: 'Round tables hold max 10 guests', removeTable: 'Remove table?', tapRsvp: 'Click RSVP to change it',
+      editTable: 'Edit table', fTableNum: 'Table number', fTableName: 'Table name', tableLabel: 'Table',
     },
     vendors: {
       title: 'Vendors', sub: 'Directory, booking status, documents and messages.',
@@ -88,6 +89,15 @@ export const T = {
       notConfigured: 'The backend isn’t connected yet. Use “Explore the demo” for now.',
       errEmpty: 'Enter your email and password.',
       errShortPw: 'Password must be at least 6 characters.',
+    },
+    profile: {
+      title: 'My profile', sub: 'Your wedding details — these drive the dashboard and countdown.',
+      couple: 'The couple', bride: "Bride's name", groom: "Groom's name",
+      whenWhere: 'When & where', date: 'Wedding date', time: 'Time (HH:MM)', venue: 'Venue',
+      budgetSec: 'Budget', totalBudget: 'Total budget (zł)',
+      contact: 'Contact', cEmail: 'Contact email', cPhone: 'Phone',
+      save: 'Save changes', saved: 'Profile saved ✓',
+      bridePh: 'e.g. Ania', groomPh: 'e.g. Tomek', venuePh: 'e.g. Dwór Lipowy',
     },
   },
   pl: {
@@ -146,6 +156,7 @@ export const T = {
       unseated: 'Goście bez miejsca (tylko potwierdzeni)', notFilled: 'niepełny', noLimit: 'bez limitu',
       addTable: 'Dodaj stół', tableName: 'Nazwa stołu…', round: 'Okrągły', rect: 'Prostokątny',
       tableFull: 'Okrągły stół mieści max 10 osób', removeTable: 'Usunąć stół?', tapRsvp: 'Kliknij RSVP, aby zmienić status',
+      editTable: 'Edytuj stół', fTableNum: 'Numer stołu', fTableName: 'Nazwa stołu', tableLabel: 'Stół',
     },
     vendors: {
       title: 'Usługodawcy', sub: 'Katalog, status rezerwacji, dokumenty i korespondencja.',
@@ -177,6 +188,15 @@ export const T = {
       notConfigured: 'Backend nie jest jeszcze podłączony. Skorzystaj na razie z „Zobacz wersję demo”.',
       errEmpty: 'Podaj e-mail i hasło.',
       errShortPw: 'Hasło musi mieć co najmniej 6 znaków.',
+    },
+    profile: {
+      title: 'Mój profil', sub: 'Szczegóły Waszego ślubu — zasilają pulpit i odliczanie.',
+      couple: 'Para młoda', bride: 'Imię panny młodej', groom: 'Imię pana młodego',
+      whenWhere: 'Kiedy i gdzie', date: 'Data ślubu', time: 'Godzina (GG:MM)', venue: 'Miejsce',
+      budgetSec: 'Budżet', totalBudget: 'Cały budżet (zł)',
+      contact: 'Kontakt', cEmail: 'E-mail kontaktowy', cPhone: 'Telefon',
+      save: 'Zapisz zmiany', saved: 'Profil zapisany ✓',
+      bridePh: 'np. Ania', groomPh: 'np. Tomek', venuePh: 'np. Dwór Lipowy',
     },
   },
 } as const;

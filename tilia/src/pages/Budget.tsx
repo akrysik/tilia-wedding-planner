@@ -100,6 +100,7 @@ export default function Budget() {
       </div>
 
       <div className="card mt">
+        <div className="table-scroll">
         <table className="budget-table">
           <tbody>
             <tr><th>{tr.budget.cat}</th><th className="num">{tr.budget.est}</th><th className="num">{tr.budget.act}</th><th className="num">{tr.budget.paid}</th><th className="num">{tr.budget.pending}</th></tr>
@@ -125,6 +126,7 @@ export default function Budget() {
             </tr>
           </tbody>
         </table>
+        </div>
         <hr className="hairline" />
         <div className="row">
           <input type="text" value={newCat} onChange={(e) => setNewCat(e.target.value)} placeholder={tr.budget.catPh} style={{ flex: 1, minWidth: 160 }} />

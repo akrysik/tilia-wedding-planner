@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../store';
-import { WEDDING_DATE } from '../seed';
+import { formatWeddingDate, formatWeddingDateTime, weddingDateTime } from '../format';
 
-function useCountdown() {
+function useCountdown(target: number) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
-  const diff = Math.max(0, WEDDING_DATE.getTime() - now);
+  const diff = Math.max(0, target - now);
   return {
     d: Math.floor(diff / 864e5),
     h: Math.floor((diff % 864e5) / 36e5),
@@ -21,7 +21,8 @@ function useCountdown() {
 export default function Dashboard() {
   const { lang, tr, data, money } = useApp();
   const nav = useNavigate();
-  const cd = useCountdown();
+  const w = data.wedding;
+  const cd = useCountdown(weddingDateTime(w.date, w.time).getTime());
 
   const tasksLeft = data.tasks.filter((x) => !x.done).slice(0, 4);
   const doneN = data.tasks.filter((x) => x.done).length;
@@ -43,8 +44,8 @@ export default function Dashboard() {
 
   return (
     <>
-      <h1 className="page-title names">Ania <em>&amp;</em> Tomek</h1>
-      <p className="page-sub">{tr.dash.sub} · {lang === 'pl' ? '12 września 2026, Dwór Lipowy' : '12 September 2026, Dwór Lipowy'}</p>
+      <h1 className="page-title names">{w.brideName} <em>&amp;</em> {w.groomName}</h1>
+      <p className="page-sub">{tr.dash.sub} · {formatWeddingDate(w.date, lang)}{w.venue ? `, ${w.venue}` : ''}</p>
       <div className="countdown-card mb">
         <div className="cd-title">{tr.dash.cdTitle}</div>
         <div className="cd-units">
@@ -56,7 +57,7 @@ export default function Dashboard() {
           ))}
         </div>
         <div className="cd-rule" />
-        <div className="cd-date">{lang === 'pl' ? '12 września 2026, 15:00' : '12 September 2026, 3:00 PM'}</div>
+        <div className="cd-date">{formatWeddingDateTime(w.date, w.time, lang)}</div>
       </div>
       <div className="grid dash-grid">
         <div className="card">

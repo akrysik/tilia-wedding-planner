@@ -24,7 +24,13 @@ function loadData(key: string): AppData {
     const raw = localStorage.getItem(key);
     if (raw) {
       const d = JSON.parse(raw) as AppData;
-      if (d && Array.isArray(d.tasks)) return d;
+      if (d && Array.isArray(d.tasks)) {
+        // Merge in defaults for keys added after this entry was saved (e.g. `wedding`).
+        const merged = { ...freshSeed(), ...d, wedding: { ...freshSeed().wedding, ...d.wedding } };
+        // Backfill table numbers for entries saved before the field existed.
+        merged.tables = merged.tables.map((t, i) => ({ ...t, number: t.number ?? i + 1 }));
+        return merged;
+      }
     }
   } catch {
     // corrupted entry → fall back to a fresh seeded wedding

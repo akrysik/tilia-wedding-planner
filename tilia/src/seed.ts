@@ -8,6 +8,15 @@ export const PIE_COLORS = ['#356B4F', '#D98E04', '#C0563B', '#8A9B6E', '#5B7E9E'
 export const SWATCHES = ['#D6456B', '#E8A0B4', '#FFFFFF', '#EADDC4', '#C9A36A', '#8A9B6E', '#4A7A52', '#7B6A4F', '#D98E04', '#1C1813'];
 
 export const seedData: AppData = {
+  wedding: {
+    brideName: 'Ania',
+    groomName: 'Tomek',
+    date: '2026-09-12',
+    time: '15:00',
+    venue: 'Dwór Lipowy',
+    contactEmail: 'ania.k@example.com',
+    contactPhone: '',
+  },
   tasks: [
     { id: 1, tf: 'm12', en: 'Book the venue', pl: 'Zarezerwuj salę weselną', who: 'partner', due: '2025-10-01', done: true },
     { id: 2, tf: 'm12', en: 'Set the budget', pl: 'Ustal budżet', who: 'couple', due: '2025-10-10', done: true },
@@ -70,10 +79,10 @@ export const seedData: AppData = {
     { id: 10, first: 'Zofia', last: 'Krawczyk', group: 'brideFam', phone: '+48 604 222 999', address: 'ul. Ogrodowa 1, Łódź', notes: { en: 'Allergic to nuts', pl: 'Alergia na orzechy' }, rsvp: 'yes', table: null },
   ],
   tables: [
-    { id: 1, shape: 'round', name: { en: 'Family', pl: 'Rodzina' }, x: 30, y: 30 },
-    { id: 2, shape: 'rect', name: { en: 'Head table', pl: 'Stół pary' }, x: 330, y: 50 },
-    { id: 3, shape: 'round', name: { en: 'Friends', pl: 'Przyjaciele' }, x: 90, y: 280 },
-    { id: 4, shape: 'rect', name: { en: 'Work', pl: 'Praca' }, x: 400, y: 300 },
+    { id: 1, number: 1, shape: 'round', name: { en: 'Family', pl: 'Rodzina' }, x: 30, y: 30 },
+    { id: 2, number: 2, shape: 'rect', name: { en: 'Head table', pl: 'Stół pary' }, x: 330, y: 50 },
+    { id: 3, number: 3, shape: 'round', name: { en: 'Friends', pl: 'Przyjaciele' }, x: 90, y: 280 },
+    { id: 4, number: 4, shape: 'rect', name: { en: 'Work', pl: 'Praca' }, x: 400, y: 300 },
   ],
   vendors: [
     {
